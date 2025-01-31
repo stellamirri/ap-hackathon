@@ -35,14 +35,7 @@ ARROW_KEYS = [
 
 pyxel.init(HEIGHT, WIDTH, fps=10)
 
-snake_geometry = [
-    [30, 60],
-]
 
-snake_direction = RIGHT
-
-
-rocks_set = set()
 
 pause_bloc = [(j, i) for i in range(13, 18) for j in range(12, 14)] + [(j, i) for i in range(13, 18) for j in range(16, 18)]
 maze_set = set()
@@ -60,7 +53,6 @@ def list_to_set(list):
         new_set.add(new_tuple)
     return new_set
 
-
 def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gauche de la piece, #dims = liste de taille de cote possible
     start = rd.choice(startpos)
     size = (rd.choice(dims), rd.choice(dims))
@@ -77,7 +69,6 @@ def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gau
     for i in range(doornumber):
         doors.add(rd.choice(list(walls)))
         walls = walls-doors
-
     return walls, inside, doors
 
 
@@ -100,41 +91,27 @@ for i in range(10):
         startpos3.append((30+i, 25+j))
 dims3 = range(7,20)
 
-#######################
+
 
 walls1, inside1, doors1 = generate_room(startpos1, dims1, 1)
 walls2, inside2, doors2 = generate_room(startpos2, dims2, 2)
 walls3, inside3, doors3 = generate_room(startpos3, dims3, 3)
 
-# def spawn_room (walls, inside, doors): 
-#     global walls1, inside1, doors1
-#     walls1, inside1, doors1 = generate_room(startpos1, dims1, 2)
-#     print(walls1, inside1, doors1)
 
+def spawn_new_snape():
+    global snape, snape_direction
+    x = rd.choice(list(inside1))
+    snape = [x[0], x[1]]
+    snape_direction = RIGHT
 
+def spawn_argent():
+    global argent1
+    global argent2
+    global argent3
+    argent1 = rd.choice(list(inside1))
+    argent2 = rd.choice(list(inside2))
+    argent3 = rd.choice(list(inside3))
 
-"""def spawn_new_rocks():
-    global rocks
-    rocks = []
-    for i in range(HEIGHT):
-        for j in range(WIDTH):
-            if (i+j) % 5 == 0 and (i-j) % 11 == 0:
-                rocks.append([i, j])
-                rocks_set.add((i, j))
-"""
-def spawn_new_snake():
-    global snake_geometry, snake_direction
-    snake_geometry = [
-        [10, 15],
-    ]
-    snake_direction = RIGHT
-
-def spawn_new_fruit():
-    global fruit
-    while True:
-        fruit = [pyxel.rndi(0, WIDTH-1), pyxel.rndi(0, HEIGHT-1)]
-        if fruit not in snake_geometry and fruit:
-            break
 
 def spawn_life(): 
     global life 
@@ -142,16 +119,13 @@ def spawn_life():
     print(f"points de vie :{len(life)}")
 
 def spawn_everything():
-    #spawn_new_rocks()
-    #spawn_new_snake()
-    spawn_new_fruit()
-# spawn_room()
-spawn_life()
-spawn_new_snake()
+    spawn_new_snape()
+    spawn_argent()
+    spawn_life()
+
 spawn_everything()
 
 score = 0
-maze_set = maze_set - rocks_set 
 
 arrow_keys = [
     pyxel.KEY_UP, 
@@ -161,28 +135,36 @@ arrow_keys = [
 ]
 
 def move_up():
-    global snake_direction
-    if snake_direction != DOWN:
-            snake_direction = UP
-    snake_move()
+    global snape_direction
+    if (snape[0] + UP[0],snape[1] + UP[1]) in list(walls1|walls2|walls3):
+        snape_direction = [0,0]
+    else : 
+        snape_direction = UP
+    snape_move()
 
 def move_down():
-    global snake_direction
-    if snake_direction != UP:
-            snake_direction = DOWN
-    snake_move()
+    global snape_direction
+    if (snape[0] + DOWN[0], snape[1] + DOWN[1]) in list(walls1|walls2|walls3):
+        snape_direction = [0,0]
+    else : 
+        snape_direction = DOWN
+    snape_move()
 
 def move_left():
-    global snake_direction
-    if snake_direction != RIGHT:
-            snake_direction = LEFT
-    snake_move()
+    global snape_direction
+    if (snape[0] + LEFT[0],snape[1] + LEFT[1]) in list(walls1|walls2|walls3):
+        snape_direction = [0,0]
+    else : 
+        snape_direction = LEFT
+    snape_move()
 
 def move_right():
-    global snake_direction
-    if snake_direction != LEFT:
-            snake_direction = RIGHT
-    snake_move()
+    global snape_direction
+    if (snape[0] + RIGHT[0],snape[1] + RIGHT[1])in list(walls1|walls2|walls3):
+        snape_direction = [0,0]
+    else : 
+        snape_direction = RIGHT
+    snape_move()
 
 
 p = False
@@ -194,16 +176,10 @@ def pause():
     else:
          p = True
 
-def bang_walls(snake_head):
-    if snake_head in list(walls1): 
-        return True
-    return False
 
 def crash(new_snake_head):
-    global snake_geometry, snake_direction, rocks
     if (
-        new_snake_head in snake_geometry
-        or (
+        (
         new_snake_head[0] < 0
         or new_snake_head[0] > HEIGHT -1
         or new_snake_head[1] < 0
@@ -214,42 +190,25 @@ def crash(new_snake_head):
     return False
 
 def game_over():
-     #clear screen 0=noir, palette par défaut avec 16 couleurs adressée par un entier de 0 à 15
+    #clear screen 0=noir, palette par défaut avec 16 couleurs adressée par un entier de 0 à 15
     color = pyxel.frame_count % 16 # le clignotement par couleur est calculé en faisant le nb de frame modulo 15 (nb de couleurs disponibles sur la palette)
     pyxel.cls(color)
     pyxel.text(HEIGHT//2-25,WIDTH//2,  "Game over ..", 0)#
 
 
-
-def snake_move():
-    global snake_geometry, snake_direction
-    snake_head = snake_geometry[-1]
-    if bang_walls([
-        snake_head[0] + snake_direction[0],
-        snake_head[1] + snake_direction[1],
-    ]): 
-        new_snake_head = snake_head
-    else : 
-        new_snake_head = [
-            snake_head[0] + snake_direction[0],
-            snake_head[1] + snake_direction[1],
-        ]
+def snape_move():
+    global snape, snape_direction
+    snape = [snape[0]+snape_direction[0], snape[1]+snape_direction[1]]
     if p:
         return None
-    
-    if crash(new_snake_head):
+    if crash(snape):
         if len(life) == 0:
             pyxel.run(update, game_over)
         life.pop()
         print(f"points de vie :{len(life)}")
-    elif new_snake_head == fruit:
-        snake_geometry = snake_geometry + [new_snake_head]
+    elif snape in [argent1 or argent2 or argent3]:
+        score +=1
         spawn_everything()
-    else:
-        snake_geometry = snake_geometry[1:] + [new_snake_head]
-    
-
-
 
 def update():
     global maze_set, snake_geometry
@@ -265,19 +224,15 @@ def display(color, position = None):
 
 def draw():
     display(WHITE)
-    snake_body = snake_geometry[:-1]
-    snake_head = snake_geometry[-1]
-
     if p:
          display(GRAY, pause_bloc)  
     
-    display(PINK, [fruit])
+    display(PINK, [argent1, argent2, argent3])
     display(PINK, life)
     display (BLACK, list(walls1|walls2|walls3))
     display(GRAY, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
-    display(DARK_GREEN, snake_body)
-    display(LIGHT_GREEN, [snake_head])
+    display(LIGHT_GREEN, [snape])
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
