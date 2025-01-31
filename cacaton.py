@@ -65,8 +65,8 @@ def list_to_set(list):
 def spawn_new_rocks():
     global rocks
     rocks = []
-    for i in range(WIDTH):
-        for j in range(HEIGHT):
+    for i in range(HEIGHT):
+        for j in range(WIDTH):
             if (i+j) % 5 == 0 and (i-j) % 11 == 0:
                 rocks.append([i, j])
                 rocks_set.add((i, j))
