@@ -36,9 +36,7 @@ ARROW_KEYS = [
 pyxel.init(HEIGHT, WIDTH, fps=10)
 
 snake_geometry = [
-    [10, 15],
-    [11, 15],
-    [12, 15],
+    [30, 60],
 ]
 
 snake_direction = RIGHT
@@ -94,7 +92,7 @@ def spawn_room ():
 
 
 
-def spawn_new_rocks():
+"""def spawn_new_rocks():
     global rocks
     rocks = []
     for i in range(HEIGHT):
@@ -102,13 +100,11 @@ def spawn_new_rocks():
             if (i+j) % 5 == 0 and (i-j) % 11 == 0:
                 rocks.append([i, j])
                 rocks_set.add((i, j))
-
+"""
 def spawn_new_snake():
     global snake_geometry, snake_direction
     snake_geometry = [
         [10, 15],
-        [11, 15],
-        [12, 15],
     ]
     snake_direction = RIGHT
 
@@ -116,7 +112,7 @@ def spawn_new_fruit():
     global fruit
     while True:
         fruit = [pyxel.rndi(0, WIDTH-1), pyxel.rndi(0, HEIGHT-1)]
-        if fruit not in snake_geometry and fruit not in rocks:
+        if fruit not in snake_geometry and fruit:
             break
 
 def spawn_life(): 
@@ -125,7 +121,7 @@ def spawn_life():
     print(f"points de vie :{len(life)}")
 
 def spawn_everything():
-    spawn_new_rocks()
+    #spawn_new_rocks()
     #spawn_new_snake()
     spawn_new_fruit()
 spawn_room()
@@ -186,7 +182,6 @@ def crash(new_snake_head):
     global snake_geometry, snake_direction, rocks
     if (
         new_snake_head in snake_geometry
-        or new_snake_head in rocks
         or (
         new_snake_head[0] < 0
         or new_snake_head[0] > HEIGHT -1
@@ -206,12 +201,14 @@ def game_over():
 
 
 def snake_move():
-    global snake_geometry, snake_direction, rocks
+    global snake_geometry, snake_direction
     snake_head = snake_geometry[-1]
-    if not bang_walls([
+    if bang_walls([
         snake_head[0] + snake_direction[0],
         snake_head[1] + snake_direction[1],
     ]): 
+        new_snake_head = snake_head
+    else : 
         new_snake_head = [
             snake_head[0] + snake_direction[0],
             snake_head[1] + snake_direction[1],
@@ -219,7 +216,6 @@ def snake_move():
     if p:
         return None
     
-        
     if crash(new_snake_head):
         if len(life) == 0:
             pyxel.run(update, game_over)
@@ -254,7 +250,6 @@ def draw():
     if p:
          display(GRAY, pause_bloc)  
     
-    display(BLACK, rocks)
     display(PINK, [fruit])
     display(PINK, life)
     display (BLACK, list(walls1))
