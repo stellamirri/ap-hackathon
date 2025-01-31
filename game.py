@@ -95,7 +95,6 @@ for i in range(10):
 dims3 = range(7,20)
 
 
-
 walls1, inside1, doors1 = generate_room(startpos1, dims1, 1)
 walls2, inside2, doors2 = generate_room(startpos2, dims2, 2)
 walls3, inside3, doors3 = generate_room(startpos3, dims3, 3)
@@ -111,6 +110,8 @@ def generate_corridors(source, target):
 corridor1 = generate_corridors(list(doors1)[0], list(doors3)[0])   
 corridor3 = generate_corridors(list(doors3)[2], list(doors2)[1])  
 
+#Mode avec unelampe ou l'on ne voit pas le reste
+torchMode = True
 
 def spawn_new_snape():
     global snape, snape_direction
@@ -224,12 +225,13 @@ def crash(new_snake_head):
     return False
 
 def lampe(snape, snape_direction):
-    eclair = set()
-    for i in range (1,6):
-        for j in range (1,6):
-            if [snape[0]+i-3, snape[1]+j-3] != snape : 
-                eclair.add((snape[0]+i-3, snape[1]+j-3))
-    return eclair
+    if torchMode:
+        eclair = set()
+        for i in range (1,6):
+            for j in range (1,6):
+                if [snape[0]+i-3, snape[1]+j-3] != snape : 
+                    eclair.add((snape[0]+i-3, snape[1]+j-3))
+        return eclair
 
 def game_over():
     #clear screen 0=noir, palette par défaut avec 16 couleurs adressée par un entier de 0 à 15
@@ -277,7 +279,8 @@ def draw():
     display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
     display(MAGENTA, [snape])
-    display(BLACK, maze_set - lampe(snape, snape_direction))
+    if torchMode:
+        display(BLACK, maze_set - lampe(snape, snape_direction))
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
