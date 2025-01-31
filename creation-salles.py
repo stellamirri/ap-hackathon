@@ -31,4 +31,4 @@ def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gau
 
     return walls, inside, doors
 
-walls1, inside1 = generate_room(startpos1, dims1, 2)
+walls1, inside1, doors1 = generate_room(startpos1, dims1, 2)
