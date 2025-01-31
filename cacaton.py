@@ -5,8 +5,8 @@ import maze
 
 
 # Geometry
-WIDTH = 30
-HEIGHT = 30
+WIDTH = 60
+HEIGHT = 110
 
 # Frame rate
 FPS = 10
@@ -47,8 +47,8 @@ rocks_set = set()
 
 pause_bloc = [(j, i) for i in range(13, 18) for j in range(12, 14)] + [(j, i) for i in range(13, 18) for j in range(16, 18)]
 maze_set = set()
-for i in range(30):
-     for j in range(30):
+for i in range(WIDTH):
+     for j in range(HEIGHT):
           maze_set.add((i,j))
 
 def list_to_set(list):
@@ -87,10 +87,15 @@ def spawn_new_fruit():
         if fruit not in snake_geometry and fruit not in rocks:
             break
 
+def spawn_life(): 
+    global life 
+    life = [[k+1,1] for k in range (5)]
+    print(f"points de vie :{len(life)}")
 def spawn_everything():
     spawn_new_rocks()
     #spawn_new_snake()
     spawn_new_fruit()
+spawn_life()
 spawn_new_snake()
 spawn_everything()
 
@@ -146,13 +151,21 @@ def crash(new_snake_head):
         or new_snake_head in rocks
         or (
         new_snake_head[0] < 0
-        or new_snake_head[0] > 29
+        or new_snake_head[0] > HEIGHT -1
         or new_snake_head[1] < 0
-        or new_snake_head[1] > 29
+        or new_snake_head[1] > WIDTH -1
         )
     ):
         return True
     return False
+
+def game_over():
+     #clear screen 0=noir, palette par défaut avec 16 couleurs adressée par un entier de 0 à 15
+    color = pyxel.frame_count % 16 # le clignotement par couleur est calculé en faisant le nb de frame modulo 15 (nb de couleurs disponibles sur la palette)
+    pyxel.cls(color)
+    pyxel.text(HEIGHT//2-25,WIDTH//2,  "Game over ..", 0)#
+
+
 
 def snake_move():
     global snake_geometry, snake_direction, rocks
@@ -163,13 +176,18 @@ def snake_move():
     ]
     if p:
         return None
+    if len(life) == 0:
+         pyxel.run(update, game_over)
     if crash(new_snake_head):
         snake_geometry = snake_geometry[1:-1] + [snake_head]
+        life.pop()
+        print(f"points de vie :{len(life)}")
     elif new_snake_head == fruit:
         snake_geometry = snake_geometry + [new_snake_head]
         spawn_everything()
     else:
         snake_geometry = snake_geometry[1:] + [new_snake_head]
+    
 
 
 
@@ -190,11 +208,12 @@ def draw():
     snake_body = snake_geometry[:-1]
     snake_head = snake_geometry[-1]
     if p:
-         display(GRAY, pause_bloc)
+         display(GRAY, pause_bloc)  
     display(DARK_GREEN, snake_body)
     display(LIGHT_GREEN, [snake_head])
     display(BLACK, rocks)
     display(PINK, [fruit])
+    display(PINK, life)
 
 
 events.register(pyxel.KEY_Q, pyxel.quit)
