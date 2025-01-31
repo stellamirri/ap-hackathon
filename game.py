@@ -140,7 +140,7 @@ def spawn_river():
 
 def river_effect():
     global river
-    clear = rd.sample(list(river), 80)
+    clear = rd.sample(list(river), 50)
     display (5, list(river))
     display (12, clear)
 
@@ -245,7 +245,7 @@ def display(color, position = None):
         pyxel.pset(x, y, color)
 
 def draw():
-    display(WHITE)
+    display(LIGHT_GREEN)
     if p:
          display(GRAY, pause_bloc)  
     
@@ -255,7 +255,7 @@ def draw():
     display (MARRON, list(walls1|walls2|walls3))
     display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
-    display(MAGENTA, snape)
+    display(MAGENTA, [snape])
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
