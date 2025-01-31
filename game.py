@@ -22,6 +22,7 @@ GRAY = 13
 MAGENTA = 2
 BEIGE = 14
 MARRON = 4
+YELLOW = 10
 
 # Directions
 UP = [0, -1]
@@ -39,7 +40,6 @@ ARROW_KEYS = [
 pyxel.init(HEIGHT, WIDTH, fps=10)
 
 
-
 pause_bloc = [(j, i) for i in range(13, 18) for j in range(12, 14)] + [(j, i) for i in range(13, 18) for j in range(16, 18)]
 maze_set = set()
 for i in range(HEIGHT):
@@ -53,7 +53,7 @@ def list_to_set(list):
             new_tuple = tuple()
             for i in k:
                 new_tuple += (i,)
-        new_set.add(new_tuple)
+            new_set.add(new_tuple)
     return new_set
 
 def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gauche de la piece, #dims = liste de taille de cote possible
@@ -99,6 +99,17 @@ dims3 = range(7,20)
 walls1, inside1, doors1 = generate_room(startpos1, dims1, 1)
 walls2, inside2, doors2 = generate_room(startpos2, dims2, 2)
 walls3, inside3, doors3 = generate_room(startpos3, dims3, 3)
+mazeee = maze_set - walls1 - walls2 - walls3 
+
+def generate_corridors(source, target):
+    try:
+        return set(maze.path_from(maze.reachable_cells(maze.maze_to_graph(mazeee), source), source)[target])
+    except:
+        print("ça ne marche pas")
+
+
+corridor1 = generate_corridors(list(doors1)[0], list(doors3)[0])   
+corridor3 = generate_corridors(list(doors3)[2], list(doors2)[1])  
 
 
 def spawn_new_snape():
@@ -206,6 +217,7 @@ def crash(new_snake_head):
         or new_snake_head[0] > HEIGHT -1
         or new_snake_head[1] < 0
         or new_snake_head[1] > WIDTH -1
+        or tuple(new_snake_head) in mazeee - inside1 - inside2 - inside3 - doors1 -doors2 - doors3 - corridor1 - corridor3
         )
     ):
         return True
@@ -258,7 +270,7 @@ def draw():
     if p:
          display(GRAY, pause_bloc)  
     
-    display(PINK, [argent1, argent2, argent3])
+
     display(PINK, life)
     river_effect()
     display (MARRON, list(walls1|walls2|walls3))
