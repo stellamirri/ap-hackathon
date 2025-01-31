@@ -3,6 +3,19 @@ import events
 import random_maze
 import maze
 
+class Monster():
+    def __init__(self, place, power = 100, pv = 100):
+        self.pv = pv
+        self.power = power
+        self.place = place
+        self.target = False
+
+    def move():
+        pass
+
+    def attack():
+        pass
+
 
 # Geometry
 WIDTH = 30
@@ -61,6 +74,20 @@ def list_to_set(list):
         new_set.add(new_tuple)
     return new_set
 
+monsters_loc = []
+monsters = {}
+monster = []
+def spawn_monsters():
+    global monsters_loc
+    global monster
+    while True:
+        loc = [pyxel.rndi(0, WIDTH-1), pyxel.rndi(0, HEIGHT-1)]
+        if loc not in snake_geometry and loc not in rocks:
+            break
+    monsters[0] = Monster(loc)
+    monsters_loc.append(loc)
+
+
 
 def spawn_new_rocks():
     global rocks
@@ -91,6 +118,7 @@ def spawn_everything():
     spawn_new_rocks()
     #spawn_new_snake()
     spawn_new_fruit()
+    spawn_monsters()
 spawn_new_snake()
 spawn_everything()
 
@@ -138,12 +166,22 @@ def pause():
     else:
          p = True
 
+def combat():
+    monsters[0].target = True
+
+def monster_move():
+    global monsters_loc, monsters
+    if monsters[0].target:
+        monsters[0].place 
+    
+    
 
 def crash(new_snake_head):
     global snake_geometry, snake_direction, rocks
     if (
         new_snake_head in snake_geometry
         or new_snake_head in rocks
+        or new_snake_head in monsters_loc
         or (
         new_snake_head[0] < 0
         or new_snake_head[0] > 29
@@ -154,6 +192,7 @@ def crash(new_snake_head):
         return True
     return False
 
+
 def snake_move():
     global snake_geometry, snake_direction, rocks
     snake_head = snake_geometry[-1]
@@ -163,6 +202,8 @@ def snake_move():
     ]
     if p:
         return None
+    if new_snake_head in monsters_loc:
+        combat()
     if crash(new_snake_head):
         snake_geometry = snake_geometry[1:-1] + [snake_head]
     elif new_snake_head == fruit:
@@ -176,6 +217,7 @@ def snake_move():
 def update():
     global maze_set, snake_geometry
     events.handle()
+    monster_move()
     #snake_move()
 
 def display(color, position = None):
@@ -184,6 +226,7 @@ def display(color, position = None):
         return None
     for x, y in position:
         pyxel.pset(x, y, color)
+
 
 def draw():
     display(WHITE)
