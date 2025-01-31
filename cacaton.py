@@ -2,7 +2,8 @@ import pyxel
 import events
 import random_maze
 import maze
-
+import numpy as np
+import random as rd
 
 # Geometry
 WIDTH = 60
@@ -61,6 +62,37 @@ def list_to_set(list):
         new_set.add(new_tuple)
     return new_set
 
+startpos1 = []
+for i in range(5):
+    for j in range(10):
+        startpos1.append((1+i, 1+j))
+dims1 = range(7,16)
+
+def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gauche de la piece, #dims = liste de taille de cote possible
+    start = rd.choice(startpos)
+    size = (rd.choice(dims), rd.choice(dims))
+    walls = set()
+    inside = set()
+    doors = set()
+    for i in range(size[0]):
+        for j in range(size[1]):
+            walls.add((start[0]+i, start[1]+j))
+    for i in range(1,size[0]-1):
+        for j in range(1,size[1]-1):
+            inside.add((start[0]+i, start[1]+j))
+    walls = walls-inside        
+    for i in range(doornumber):
+        doors.add(rd.choice(list(walls)))
+    walls = walls-inside-doors
+
+    return walls, inside, doors
+
+def spawn_room (): 
+    global walls1, inside1, doors1
+    walls1, inside1, doors1 = generate_room(startpos1, dims1, 2)
+    print(walls1, inside1, doors1)
+
+
 
 def spawn_new_rocks():
     global rocks
@@ -91,10 +123,12 @@ def spawn_life():
     global life 
     life = [[k+1,1] for k in range (5)]
     print(f"points de vie :{len(life)}")
+
 def spawn_everything():
     spawn_new_rocks()
     #spawn_new_snake()
     spawn_new_fruit()
+spawn_room()
 spawn_life()
 spawn_new_snake()
 spawn_everything()
@@ -143,6 +177,10 @@ def pause():
     else:
          p = True
 
+def bang_walls(snake_head):
+    if snake_head in list(walls1): 
+        return True
+    return False
 
 def crash(new_snake_head):
     global snake_geometry, snake_direction, rocks
@@ -170,16 +208,21 @@ def game_over():
 def snake_move():
     global snake_geometry, snake_direction, rocks
     snake_head = snake_geometry[-1]
-    new_snake_head = [
+    if not bang_walls([
         snake_head[0] + snake_direction[0],
         snake_head[1] + snake_direction[1],
-    ]
+    ]): 
+        new_snake_head = [
+            snake_head[0] + snake_direction[0],
+            snake_head[1] + snake_direction[1],
+        ]
     if p:
         return None
-    if len(life) == 0:
-         pyxel.run(update, game_over)
+    
+        
     if crash(new_snake_head):
-        snake_geometry = snake_geometry[1:-1] + [snake_head]
+        if len(life) == 0:
+            pyxel.run(update, game_over)
         life.pop()
         print(f"points de vie :{len(life)}")
     elif new_snake_head == fruit:
@@ -207,14 +250,18 @@ def draw():
     display(WHITE)
     snake_body = snake_geometry[:-1]
     snake_head = snake_geometry[-1]
+
     if p:
          display(GRAY, pause_bloc)  
-    display(DARK_GREEN, snake_body)
-    display(LIGHT_GREEN, [snake_head])
+    
     display(BLACK, rocks)
     display(PINK, [fruit])
     display(PINK, life)
-
+    display (BLACK, list(walls1))
+    display(GRAY, list(inside1))
+    display(12, list(doors1))
+    display(DARK_GREEN, snake_body)
+    display(LIGHT_GREEN, [snake_head])
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
