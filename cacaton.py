@@ -62,11 +62,6 @@ def list_to_set(list):
         new_set.add(new_tuple)
     return new_set
 
-startpos1 = []
-for i in range(5):
-    for j in range(10):
-        startpos1.append((1+i, 1+j))
-dims1 = range(7,16)
 
 def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gauche de la piece, #dims = liste de taille de cote possible
     start = rd.choice(startpos)
@@ -83,14 +78,40 @@ def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gau
     walls = walls-inside        
     for i in range(doornumber):
         doors.add(rd.choice(list(walls)))
-    walls = walls-inside-doors
+        walls = walls-doors
 
     return walls, inside, doors
 
-def spawn_room (): 
-    global walls1, inside1, doors1
-    walls1, inside1, doors1 = generate_room(startpos1, dims1, 2)
-    print(walls1, inside1, doors1)
+
+#PARAMETRES DES SALLES
+startpos1 = []
+for i in range(10):
+    for j in range(10):
+        startpos1.append((7+i, 5+j))
+dims1 = range(7,30)
+
+startpos2 = []
+for i in range(10):
+    for j in range(10):
+        startpos2.append((50+i, 10+j))
+dims2 = range(20,40)
+
+startpos3 = []
+for i in range(10):
+    for j in range(10):
+        startpos3.append((30+i, 25+j))
+dims3 = range(7,20)
+
+#######################
+
+walls1, inside1, doors1 = generate_room(startpos1, dims1, 1)
+walls2, inside2, doors2 = generate_room(startpos2, dims2, 2)
+walls3, inside3, doors3 = generate_room(startpos3, dims3, 3)
+
+# def spawn_room (walls, inside, doors): 
+#     global walls1, inside1, doors1
+#     walls1, inside1, doors1 = generate_room(startpos1, dims1, 2)
+#     print(walls1, inside1, doors1)
 
 
 
@@ -128,7 +149,7 @@ def spawn_everything():
     spawn_new_rocks()
     #spawn_new_snake()
     spawn_new_fruit()
-spawn_room()
+# spawn_room()
 spawn_life()
 spawn_new_snake()
 spawn_everything()
@@ -257,9 +278,9 @@ def draw():
     display(BLACK, rocks)
     display(PINK, [fruit])
     display(PINK, life)
-    display (BLACK, list(walls1))
-    display(GRAY, list(inside1))
-    display(12, list(doors1))
+    display (BLACK, list(walls1|walls2|walls3))
+    display(GRAY, list(inside1|inside2|inside3))
+    display(12, list(doors1|doors2|doors3))
     display(DARK_GREEN, snake_body)
     display(LIGHT_GREEN, [snake_head])
 
