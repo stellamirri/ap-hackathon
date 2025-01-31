@@ -97,7 +97,7 @@ dims2 = range(20,40)
 startpos3 = []
 for i in range(10):
     for j in range(10):
-        startpos3.append((30+i, 25+j))
+        startpos3.append((30+i, 35+j))
 dims3 = range(7,20)
 
 #######################
@@ -162,26 +162,22 @@ arrow_keys = [
 
 def move_up():
     global snake_direction
-    if snake_direction != DOWN:
-            snake_direction = UP
+    snake_direction = UP
     snake_move()
 
 def move_down():
     global snake_direction
-    if snake_direction != UP:
-            snake_direction = DOWN
+    snake_direction = DOWN
     snake_move()
 
 def move_left():
     global snake_direction
-    if snake_direction != RIGHT:
-            snake_direction = LEFT
+    snake_direction = LEFT
     snake_move()
 
 def move_right():
     global snake_direction
-    if snake_direction != LEFT:
-            snake_direction = RIGHT
+    snake_direction = RIGHT
     snake_move()
 
 
@@ -195,7 +191,7 @@ def pause():
          p = True
 
 def bang_walls(snake_head):
-    if snake_head in list(walls1): 
+    if snake_head in list(walls1|walls2|walls3): 
         return True
     return False
 
