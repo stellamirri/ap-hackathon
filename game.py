@@ -42,8 +42,8 @@ pyxel.init(HEIGHT, WIDTH, fps=10)
 
 pause_bloc = [(j, i) for i in range(13, 18) for j in range(12, 14)] + [(j, i) for i in range(13, 18) for j in range(16, 18)]
 maze_set = set()
-for i in range(WIDTH):
-     for j in range(HEIGHT):
+for i in range(HEIGHT):
+     for j in range(WIDTH):
           maze_set.add((i,j))
 
 def list_to_set(list):
@@ -211,6 +211,14 @@ def crash(new_snake_head):
         return True
     return False
 
+def lampe(snape, snape_direction):
+    eclair = set()
+    for i in range (1,6):
+        for j in range (1,6):
+            if [snape[0]+i-3, snape[1]+j-3] != snape : 
+                eclair.add((snape[0]+i-3, snape[1]+j-3))
+    return eclair
+
 def game_over():
     #clear screen 0=noir, palette par défaut avec 16 couleurs adressée par un entier de 0 à 15
     color = pyxel.frame_count % 16 # le clignotement par couleur est calculé en faisant le nb de frame modulo 15 (nb de couleurs disponibles sur la palette)
@@ -231,6 +239,7 @@ def snape_move():
     elif snape in [argent1 or argent2 or argent3]:
         score +=1
         spawn_everything()
+    
 
 def update():
     global maze_set, snake_geometry
@@ -256,6 +265,7 @@ def draw():
     display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
     display(MAGENTA, [snape])
+    display(BLACK, maze_set - lampe(snape, snape_direction))
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
@@ -266,3 +276,5 @@ events.register(pyxel.KEY_P, pause)
 
 
 pyxel.run(update, draw)
+
+
