@@ -87,6 +87,15 @@ def spawn_new_fruit():
         if fruit not in snake_geometry and fruit not in rocks:
             break
 
+############################################################################################
+def spawn_objects():
+    global object
+    while True:
+        object = [pyxel.rndi(0, WIDTH-1), pyxel.rndi(0, HEIGHT-1)] #dimensions du donjon 
+        if fruit not in snake_geometry and fruit not in rocks:  # à changer avec les murs
+            break
+#############################################################################################
+
 def spawn_everything():
     spawn_new_rocks()
     #spawn_new_snake()
