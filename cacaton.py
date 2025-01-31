@@ -19,6 +19,9 @@ PINK = 8
 DARK_GREEN = 3
 LIGHT_GREEN = 11
 GRAY = 13
+MAGENTA = 2
+BEIGE = 15
+MARRON = 4
 
 # Directions
 UP = [0, -1]
@@ -260,7 +263,7 @@ def display(color, position = None):
         pyxel.pset(x, y, color)
 
 def draw():
-    display(WHITE)
+    display(LIGHT_GREEN)
     snake_body = snake_geometry[:-1]
     snake_head = snake_geometry[-1]
 
@@ -269,11 +272,11 @@ def draw():
     
     display(PINK, [fruit])
     display(PINK, life)
-    display (BLACK, list(walls1|walls2|walls3))
-    display(GRAY, list(inside1|inside2|inside3))
+    display (MARRON, list(walls1|walls2|walls3))
+    display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
     display(DARK_GREEN, snake_body)
-    display(LIGHT_GREEN, [snake_head])
+    display(MAGENTA, [snake_head])
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
