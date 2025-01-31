@@ -25,9 +25,10 @@ def generate_room(startpos, dims, doornumber): #startpos = zone pour le haut gau
     for i in range(1,size[0]-1):
         for j in range(1,size[1]-1):
             inside.add((start[0]+i, start[1]+j))
+    walls = walls-inside
     for i in range(doornumber):
-        doors.add(rd.choice(walls))
-    walls = walls-inside-doors
+        doors.add(rd.choice(list(walls)))
+        walls = walls-doors
 
     return walls, inside, doors
 
