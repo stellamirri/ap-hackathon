@@ -19,6 +19,9 @@ PINK = 8
 DARK_GREEN = 3
 LIGHT_GREEN = 11
 GRAY = 13
+MAGENTA = 2
+BEIGE = 15
+MARRON = 4
 
 # Directions
 UP = [0, -1]
@@ -97,7 +100,7 @@ dims2 = range(20,40)
 startpos3 = []
 for i in range(10):
     for j in range(10):
-        startpos3.append((30+i, 25+j))
+        startpos3.append((30+i, 35+j))
 dims3 = range(7,20)
 
 #######################
@@ -162,26 +165,22 @@ arrow_keys = [
 
 def move_up():
     global snake_direction
-    if snake_direction != DOWN:
-            snake_direction = UP
+    snake_direction = UP
     snake_move()
 
 def move_down():
     global snake_direction
-    if snake_direction != UP:
-            snake_direction = DOWN
+    snake_direction = DOWN
     snake_move()
 
 def move_left():
     global snake_direction
-    if snake_direction != RIGHT:
-            snake_direction = LEFT
+    snake_direction = LEFT
     snake_move()
 
 def move_right():
     global snake_direction
-    if snake_direction != LEFT:
-            snake_direction = RIGHT
+    snake_direction = RIGHT
     snake_move()
 
 
@@ -195,7 +194,7 @@ def pause():
          p = True
 
 def bang_walls(snake_head):
-    if snake_head in list(walls1): 
+    if snake_head in list(walls1|walls2|walls3): 
         return True
     return False
 
@@ -264,7 +263,7 @@ def display(color, position = None):
         pyxel.pset(x, y, color)
 
 def draw():
-    display(WHITE)
+    display(LIGHT_GREEN)
     snake_body = snake_geometry[:-1]
     snake_head = snake_geometry[-1]
 
@@ -273,11 +272,11 @@ def draw():
     
     display(PINK, [fruit])
     display(PINK, life)
-    display (BLACK, list(walls1|walls2|walls3))
-    display(GRAY, list(inside1|inside2|inside3))
+    display (MARRON, list(walls1|walls2|walls3))
+    display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
     display(DARK_GREEN, snake_body)
-    display(LIGHT_GREEN, [snake_head])
+    display(MAGENTA, [snake_head])
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
