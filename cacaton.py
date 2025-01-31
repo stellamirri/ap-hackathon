@@ -20,7 +20,7 @@ DARK_GREEN = 3
 LIGHT_GREEN = 11
 GRAY = 13
 MAGENTA = 2
-BEIGE = 15
+BEIGE = 14
 MARRON = 4
 
 # Directions
@@ -109,7 +109,7 @@ walls1, inside1, doors1 = generate_room(startpos1, dims1, 1)
 walls2, inside2, doors2 = generate_room(startpos2, dims2, 2)
 walls3, inside3, doors3 = generate_room(startpos3, dims3, 3)
 
-# def spawn_room (walls, inside, doors): 
+# def spawn_room (walls, inside, doors):
 #     global walls1, inside1, doors1
 #     walls1, inside1, doors1 = generate_room(startpos1, dims1, 2)
 #     print(walls1, inside1, doors1)
@@ -144,6 +144,23 @@ def spawn_life():
     life = [[k+1,1] for k in range (5)]
     print(f"points de vie :{len(life)}")
 
+def spawn_river():
+    global river 
+    river = set()
+    r = rd.randrange(int(WIDTH*1/3),int(WIDTH*2/3))
+    river.add((0,r))
+    river.add((0,r+1))
+    for i in range(HEIGHT):
+        r += rd.randrange(-1,1)
+        river.add((i,r))
+        river.add((i,r+1))
+
+def river_effect():
+    global river
+    clear = rd.sample(list(river), 100)
+    display (5, list(river))
+    display (12, clear)
+
 def spawn_everything():
     #spawn_new_rocks()
     #spawn_new_snake()
@@ -152,7 +169,7 @@ def spawn_everything():
 spawn_life()
 spawn_new_snake()
 spawn_everything()
-
+spawn_river()
 score = 0
 maze_set = maze_set - rocks_set 
 
@@ -272,11 +289,13 @@ def draw():
     
     display(PINK, [fruit])
     display(PINK, life)
+    river_effect()
     display (MARRON, list(walls1|walls2|walls3))
     display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
     display(DARK_GREEN, snake_body)
     display(MAGENTA, [snake_head])
+    
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)

@@ -19,6 +19,9 @@ PINK = 8
 DARK_GREEN = 3
 LIGHT_GREEN = 11
 GRAY = 13
+MAGENTA = 2
+BEIGE = 14
+MARRON = 4
 
 # Directions
 UP = [0, -1]
@@ -123,8 +126,27 @@ def spawn_everything():
     spawn_argent()
     spawn_life()
 
-spawn_everything()
+river = set()
 
+def spawn_river():
+    global river
+    r = rd.randrange(int(WIDTH*1/3),int(WIDTH*2/3))
+    river.add((0,r))
+    river.add((0,r+1))
+    for i in range(HEIGHT):
+        r += rd.randrange(-1,1)
+        river.add((i,r))
+        river.add((i,r+1))
+
+def river_effect():
+    global river
+    clear = rd.sample(list(river), 80)
+    display (5, list(river))
+    display (12, clear)
+
+
+spawn_everything()
+spawn_river()
 score = 0
 
 arrow_keys = [
@@ -229,10 +251,11 @@ def draw():
     
     display(PINK, [argent1, argent2, argent3])
     display(PINK, life)
-    display (BLACK, list(walls1|walls2|walls3))
-    display(GRAY, list(inside1|inside2|inside3))
+    river_effect()
+    display (MARRON, list(walls1|walls2|walls3))
+    display(BEIGE, list(inside1|inside2|inside3))
     display(12, list(doors1|doors2|doors3))
-    display(LIGHT_GREEN, [snape])
+    display(MAGENTA, snape)
 
 events.register(pyxel.KEY_Q, pyxel.quit)
 events.register(pyxel.KEY_UP, move_up)
